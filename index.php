@@ -29,14 +29,13 @@
 
 			$myArr[$worksheet->getCell('B'.$row)->getValue()] = $worksheet->getCell('G'.$row)->getCalculatedValue();
 
-			// if( is_int($worksheet->getCell('G'.$row))->getValue() ){
-			// 	$myArr[$worksheet->getCell('B'.$row)->getValue()] = $worksheet->getCell('G'.$row)->getValue();
-			// }
-			// else
-			// 	$myArr[$worksheet->getCell('B'.$row)->getValue()] = $worksheet->getCell('G'.$row)->getOldCalculatedValue();
+			// getCell('B'.$row) указываем столбец и номер строки
+			//getCalculatedValue(); Возвращает высчитанную по формуле данную
+			//getValue() Возвращает значение ячейки. Но если там формула к примеру "=F11+E11" то он вернет формулу а не значение
+			//getOldCalculatedValue(); Возвращает только те значения где формула а которые сами прописына не возвращает
 		}
 
-		// print_r($myArr);
+		
 
 		echo "<table border='1' cellspacing='2' cellpadding='2'> ";
 
