@@ -12,7 +12,7 @@
 			require_once "Classes/PHPExcel.php";
 			require_once "db.php";
 
-		$tmpfname = "clothes.xlsx";
+		$tmpfname = "test.xlsx";
 		$excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
 		$excelObj = $excelReader->load($tmpfname);
 		$worksheet = $excelObj->getActiveSheet();
@@ -24,11 +24,13 @@
 
 
 		$myArr = array();
+		$nameArr = array();
 
 		for ($row=1; $row <=$lastRow ; $row++) {
 			
 
-			$myArr[$worksheet->getCell('L'.$row)->getValue()] = $worksheet->getCell('G'.$row)->getCalculatedValue();
+			$myArr[$worksheet->getCell('C'.$row)->getValue()] = $worksheet->getCell('B'.$row)->getCalculatedValue();
+			$nameArr[$worksheet->getCell('A'.$row)->getValue()] = $worksheet->getCell('B'.$row)->getValue();
 
 			// getCell('B'.$row) указываем столбец и номер строки
 			//getCalculatedValue(); Возвращает высчитанную по формуле данную
@@ -55,7 +57,7 @@
 
 
 		$sql = "
-			SELECT oc_product.sku, oc_product.price, oc_product.wholesale_price, oc_product_description.name
+			SELECT oc_product.sku,oc_product.product_id, oc_product.price, oc_product.wholesale_price, oc_product_description.name
 			FROM oc_product
 			LEFT JOIN oc_product_description ON oc_product.product_id = oc_product_description.product_id
 		";
@@ -64,9 +66,12 @@
 		$result = $con->query($sql);
 		$ok=0;
 		$flag=0;
+		$flag2=0;
 		$noChange = array();
+		$one = 1;
 
-		$stmt = $con->prepare("UPDATE oc_product SET wholesale_price = ? WHERE sku = ?");
+		$stmt = $con->prepare("UPDATE oc_product SET wholesale_price = ?, updated = ? WHERE sku = ?");
+		$stmt2 = $con->prepare("UPDATE oc_product SET status = ?, updated = ? WHERE product_id = ?");
 
 		if ($result->num_rows > 0) {
 		    // output data of each row
@@ -76,34 +81,56 @@
 		        	
 		        	if($row['sku'] !='' && $key == $row['sku']){
 		  				#$upd= "UPDATE oc_product SET wholesale_price = '.$value.' WHERE sku='{$row['sku']}'";
-		  				$stmt->bind_param('is', $value, $row['sku']);
+		  				$stmt->bind_param('iss', $value, $one, $row['sku']);
 		  				$stmt->execute();
         				
 		  				
 		        		$flag = 1;
 
-		        		$fp2 = fopen("C:\Users\malik\Desktop\scroll-to-top\counter2.txt", "a");
-		        		$text = $row['name']."\r\n";
-		        		$test = fwrite($fp2, $text);
-		        		fclose($fp2);
+		        		
 		        		break;
 		        	}else{
 		        		$flag = 0;
 		        	}
-		        }
+		        }#Конец форич
 
+		        
 		        if($flag==0){
-		        	$noChange[$ok] = $row['name'];
-		        	$ok++;
-		        }
-		        else{
-		        	$flag=0;
-		        }
+
+		        	foreach ($nameArr as $key => $value) {
+
+		        		if($row['name'] !='' && $key == $row['name']){
+		        			$stmt->bind_param('iis', $value, $one, $row['name']);
+		  					$stmt->execute();
+
+		  					$flag2 = 1;
+		  					
+			        		break;
+		        		}else{
+		        			$flag2 = 0;
+		        		}
+		        	}#Конец форич
+
+		        	if($flag2 == 0){
+
+		        		$noChange[$ok] = $row['name'];
+		        		$ok++;
+		        	}else{
+		        		$flag2 = 0;
+		        	}
+		        }#Конец If
+
+
 		    }
-		} else {
+		}
+		else {
 		    echo "0 results";
 		}
+
+
+		fclose($fp2);
 		$stmt->close();
+		$stmt2->close();
 
 
 		$fp = fopen("C:\Users\malik\Desktop\scroll-to-top\counter.txt", "a"); // Открываем файл в режиме записи 
@@ -111,11 +138,13 @@
 			$text = $value."\r\n";
 			$test = fwrite($fp, $text); // Запись в файл
 		}
+
+
 		
 		
 		fclose($fp); //Закрытие файла
 
-
+		var_dump($noChange);
 	?>
 
 </body>
