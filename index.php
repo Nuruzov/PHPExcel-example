@@ -12,7 +12,7 @@
 			require_once "Classes/PHPExcel.php";
 			require_once "db.php";
 
-		$tmpfname = "size.xlsx";
+		$tmpfname = "clothes.xlsx";
 		$excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
 		$excelObj = $excelReader->load($tmpfname);
 		$worksheet = $excelObj->getActiveSheet();
@@ -74,24 +74,26 @@
 		        
 		        foreach ($myArr as $key => $value) {
 		        	
-		        	if($key == $row['sku'] && $row['sku']!=''){
+		        	if($row['sku'] !='' && $key == $row['sku']){
 		  				#$upd= "UPDATE oc_product SET wholesale_price = '.$value.' WHERE sku='{$row['sku']}'";
 		  				$stmt->bind_param('is', $value, $row['sku']);
 		  				$stmt->execute();
         				
-		  				// if ($con->query($upd) === TRUE) {
-		  				//     echo "Record updated successfully";
-		  				// }else{
-		  				// 	#echo "error";
-		  				// }
+		  				
 		        		$flag==1;
+
+		        		$fp2 = fopen("C:\Users\malik\Desktop\scroll-to-top\counter2.txt", "a");
+		        		$text = $row['name']."\r\n";
+		        		$test = fwrite($fp2, $text);
+		        		fclose($fp2);
+		        		break;
 		        	}else{
 		        		$flag=0;
 		        	}
 		        }
 
 		        if($flag==0){
-		        	$noChange[$ok] = $key;
+		        	$noChange[$ok] = $row['name'];
 		        	$ok++;
 		        }
 		        else{
@@ -103,7 +105,16 @@
 		}
 		$stmt->close();
 
-		print_r($noChange) ;
+
+		$fp = fopen("C:\Users\malik\Desktop\scroll-to-top\counter.txt", "a"); // Открываем файл в режиме записи 
+		foreach ($noChange as $key => $value) {
+			$text = $value."\r\n";
+			$test = fwrite($fp, $text); // Запись в файл
+		}
+		
+		
+		fclose($fp); //Закрытие файла
+
 
 	?>
 
