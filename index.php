@@ -38,18 +38,18 @@
 
 		
 
-		echo "<table border='1' cellspacing='2' cellpadding='2'> ";
+		// echo "<table border='1' cellspacing='2' cellpadding='2'> ";
 
-		$i=1;
-		foreach ($myArr as $key => $value) {
-			echo "<tr>";
-			echo "<td>$i</td>";
-			echo "<td>$key</td>";
-			echo "<td>$value</td>";
-			echo "</tr>";
-			$i++;
-		}
-		echo "</table>";
+		// $i=1;
+		// foreach ($myArr as $key => $value) {
+		// 	echo "<tr>";
+		// 	echo "<td>$i</td>";
+		// 	echo "<td>$key</td>";
+		// 	echo "<td>$value</td>";
+		// 	echo "</tr>";
+		// 	$i++;
+		// }
+		// echo "</table>";
 
 
 
@@ -80,7 +80,7 @@
 		  				$stmt->execute();
         				
 		  				
-		        		$flag==1;
+		        		$flag = 1;
 
 		        		$fp2 = fopen("C:\Users\malik\Desktop\scroll-to-top\counter2.txt", "a");
 		        		$text = $row['name']."\r\n";
@@ -88,7 +88,7 @@
 		        		fclose($fp2);
 		        		break;
 		        	}else{
-		        		$flag=0;
+		        		$flag = 0;
 		        	}
 		        }
 
